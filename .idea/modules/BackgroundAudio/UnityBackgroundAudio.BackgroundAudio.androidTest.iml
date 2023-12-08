@@ -24,9 +24,13 @@
     <content url="file://$MODULE_DIR$/../../../BackgroundAudio/build/generated/aidl_source_output_dir/debugAndroidTest/out" />
     <content url="file://$MODULE_DIR$/../../../BackgroundAudio/build/generated/ap_generated_sources/debugAndroidTest/out" />
     <content url="file://$MODULE_DIR$/../../../BackgroundAudio/build/generated/renderscript_source_output_dir/debugAndroidTest/out" />
-    <content url="file://$MODULE_DIR$/../../../BackgroundAudio/build/generated/res/resValues/androidTest/debug" />
+    <content url="file://$MODULE_DIR$/../../../BackgroundAudio/build/generated/res/resValues/androidTest/debug">
+      <sourceFolder url="file://$MODULE_DIR$/../../../BackgroundAudio/build/generated/res/resValues/androidTest/debug" type="java-test-resource" />
+    </content>
     <content url="file://$MODULE_DIR$/../../../BackgroundAudio/build/generated/res/rs/androidTest/debug" />
-    <content url="file://$MODULE_DIR$/../../../BackgroundAudio/build/generated/source/buildConfig/androidTest/debug" />
+    <content url="file://$MODULE_DIR$/../../../BackgroundAudio/build/generated/source/buildConfig/androidTest/debug">
+      <sourceFolder url="file://$MODULE_DIR$/../../../BackgroundAudio/build/generated/source/buildConfig/androidTest/debug" isTestSource="true" generated="true" />
+    </content>
     <content url="file://$MODULE_DIR$/../../../BackgroundAudio/src/androidTest" />
     <content url="file://$MODULE_DIR$/../../../BackgroundAudio/src/androidTestDebug" />
     <orderEntry type="jdk" jdkName="Android API 30 Platform" jdkType="Android SDK" />

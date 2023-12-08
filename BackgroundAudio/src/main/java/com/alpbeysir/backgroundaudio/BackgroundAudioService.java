@@ -11,30 +11,24 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationCompat;
-
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.ui.DefaultMediaDescriptionAdapter;
+import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 
-import java.io.File;
-import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
-import java.util.concurrent.TimeUnit;
 
 public class BackgroundAudioService extends Service implements Player.Listener {
     public static BackgroundAudioInterface baInterface;
@@ -48,25 +42,20 @@ public class BackgroundAudioService extends Service implements Player.Listener {
 
     private static final String ACTION_DISPOSE = "dispose";
     private static final String ACTION_START = "start";
-    private static final String ACTION_SHOW_NOTIFICATION = "notification";
     private static final String ACTION_INITIALIZE = "initialize";
 
     private static final String TAG = "BackgroundAudio";
 
     private static final int NOTIFICATION_ID = 1;
-    private static NotificationCompat.Builder builder;
 
     private static Activity unityPlayerActivity;
     private static boolean paused;
 
     private static Handler mainHandler;
-    PlayerNotificationManager pnm;
-    PlayerNotificationManager.MediaDescriptionAdapter ad;
 
     private final IntentFilter becomingNoisyFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
     private final BecomingNoisyReceiver becomingNoisyReceiver = new BecomingNoisyReceiver();
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         switch (intent.getAction()) {
@@ -76,10 +65,15 @@ public class BackgroundAudioService extends Service implements Player.Listener {
                 Log.d(TAG, String.format("Starting player on path %s", path));
 
                 posCache = 0;
-                if (pnm != null)
-                    pnm.setPlayer(null);
 
                 MediaItem item = MediaItem.fromUri(path);
+
+                AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                        .setUsage(C.USAGE_MEDIA)
+                        .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                        .build();
+
+                player.setAudioAttributes(audioAttributes, true);
 
                 player.setMediaItem(item);
                 player.prepare();
@@ -88,32 +82,6 @@ public class BackgroundAudioService extends Service implements Player.Listener {
                 //Make sure playback stops on headphones disconnected
                 registerReceiver(becomingNoisyReceiver, becomingNoisyFilter);
 
-                PlayerNotificationManager.Builder builder = new PlayerNotificationManager.Builder(this, NOTIFICATION_ID, NOTIFICATION_CHANNEL_ID);
-                builder.setMediaDescriptionAdapter(ad);
-                builder.setNotificationListener(new PlayerNotificationManager.NotificationListener() {
-                    @Override
-                    public void onNotificationPosted(int notificationId, Notification notification, boolean ongoing) {
-                        startForeground(NOTIFICATION_ID, notification);
-                    }
-                });
-
-                pnm = builder.build();
-                pnm.setUseRewindActionInCompactView(true);
-                pnm.setUseFastForwardActionInCompactView(true);
-                pnm.setUseNextActionInCompactView(true);
-                pnm.setUsePreviousActionInCompactView(true);
-
-                pnm.setPlayer(player);
-                break;
-            }
-            case ACTION_DISPOSE: {
-                pnm.setPlayer(null);
-                player.release();
-                baInterface.Stopped();
-                stopSelf();
-                break;
-            }
-            case ACTION_SHOW_NOTIFICATION:
                 String title = intent.getStringExtra(EXTRA_TITLE);
                 String desc = intent.getStringExtra(EXTRA_DESC);
                 String iconUri = intent.getStringExtra(EXTRA_ICON_URI);
@@ -122,7 +90,7 @@ public class BackgroundAudioService extends Service implements Player.Listener {
                 Intent resultIntent = new Intent(this, unityPlayerActivity.getClass());
                 PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_IMMUTABLE);
 
-                ad = new PlayerNotificationManager.MediaDescriptionAdapter() {
+                PlayerNotificationManager.MediaDescriptionAdapter ad = new PlayerNotificationManager.MediaDescriptionAdapter() {
                     @Override
                     public CharSequence getCurrentContentTitle(Player player) {
                         return title;
@@ -143,11 +111,31 @@ public class BackgroundAudioService extends Service implements Player.Listener {
                     @Nullable
                     @Override
                     public Bitmap getCurrentLargeIcon(Player player, PlayerNotificationManager.BitmapCallback callback) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(iconUri);
-                        return bitmap;
+                        return BitmapFactory.decodeFile(iconUri);
                     }
                 };
+
+                PlayerNotificationManager.Builder builder = new PlayerNotificationManager.Builder(this, NOTIFICATION_ID, NOTIFICATION_CHANNEL_ID);
+                builder.setMediaDescriptionAdapter(ad);
+                builder.setNotificationListener(new PlayerNotificationManager.NotificationListener() {
+                    @Override
+                    public void onNotificationPosted(int notificationId, Notification notification, boolean ongoing) {
+                        startForeground(NOTIFICATION_ID, notification);
+                    }
+                });
+
+                PlayerNotificationManager pnm = builder.build();
+                pnm.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+                pnm.setPlayer(player);
                 break;
+            }
+            case ACTION_DISPOSE: {
+                player.release();
+                baInterface.Stopped();
+                stopSelf();
+                break;
+            }
             case ACTION_INITIALIZE:
                 player = new ExoPlayer.Builder(unityPlayerActivity).build();
                 player.addListener(this);
@@ -157,7 +145,7 @@ public class BackgroundAudioService extends Service implements Player.Listener {
         return START_NOT_STICKY;
     }
 
-    public static void start(String path) {
+    public static void start(String path, String title, String desc, String iconUri) {
         if (unityPlayerActivity == null)  {
             Log.e(TAG, "Must call initialize before using service");
             return;
@@ -166,18 +154,6 @@ public class BackgroundAudioService extends Service implements Player.Listener {
         Intent intent = new Intent(unityPlayerActivity, BackgroundAudioService.class);
         intent.setAction(ACTION_START);
         intent.putExtra(EXTRA_PATH, path);
-
-        unityPlayerActivity.startService(intent);
-    }
-
-    public static void showNotification(String title, String desc, String iconUri) {
-        if (unityPlayerActivity == null)  {
-            Log.e(TAG, "Must call initialize before using service");
-            return;
-        }
-
-        Intent intent = new Intent(unityPlayerActivity, BackgroundAudioService.class);
-        intent.setAction(ACTION_SHOW_NOTIFICATION);
         intent.putExtra(EXTRA_TITLE, title);
         intent.putExtra(EXTRA_DESC, desc);
         intent.putExtra(EXTRA_ICON_URI, iconUri);
@@ -290,7 +266,6 @@ public class BackgroundAudioService extends Service implements Player.Listener {
     @Override
     public void onDestroy() {
         if (player != null) {
-            pnm.setPlayer(null);
             player.release();
         }
     }
