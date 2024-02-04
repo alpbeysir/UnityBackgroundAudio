@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="Gradle: androidx.media:media:1.4.3@aar">
+  <library name="Gradle: androidx.media:media:1.4.3@aar" external-system-id="GRADLE">
     <ANNOTATIONS>
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/ccf32205486957917ee5a5bbdceedae7/transformed/media-1.4.3/annotations.zip!/" />
     </ANNOTATIONS>

@@ -1,17 +1,9 @@
 <component name="libraryTable">
-  <library name="Gradle: com.google.android.exoplayer:exoplayer-ui:2.18.1@aar">
+  <library name="Gradle: com.google.android.exoplayer:exoplayer-ui:2.18.1@aar" external-system-id="GRADLE">
     <ANNOTATIONS>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/f2da1c9d24d20782b71bfd4df13fa019/transformed/jetified-exoplayer-ui-2.18.1/annotations.zip!/" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/f067cd15517754106a33eff5da4977b2/transformed/jetified-exoplayer-ui-2.18.1/annotations.zip!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/97ac6b6c138ba0d92c3569325b692d9a/transformed/jetified-exoplayer-ui-2.18.1/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/f2da1c9d24d20782b71bfd4df13fa019/transformed/jetified-exoplayer-ui-2.18.1/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f2da1c9d24d20782b71bfd4df13fa019/transformed/jetified-exoplayer-ui-2.18.1/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f2da1c9d24d20782b71bfd4df13fa019/transformed/jetified-exoplayer-ui-2.18.1/AndroidManifest.xml" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f067cd15517754106a33eff5da4977b2/transformed/jetified-exoplayer-ui-2.18.1/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f067cd15517754106a33eff5da4977b2/transformed/jetified-exoplayer-ui-2.18.1/AndroidManifest.xml" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/f067cd15517754106a33eff5da4977b2/transformed/jetified-exoplayer-ui-2.18.1/jars/classes.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/97ac6b6c138ba0d92c3569325b692d9a/transformed/jetified-exoplayer-ui-2.18.1/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/97ac6b6c138ba0d92c3569325b692d9a/transformed/jetified-exoplayer-ui-2.18.1/res" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/97ac6b6c138ba0d92c3569325b692d9a/transformed/jetified-exoplayer-ui-2.18.1/AndroidManifest.xml" />
